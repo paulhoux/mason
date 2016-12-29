@@ -260,7 +260,26 @@ void Hud::resizeInfoLabel()
 
 void Hud::showInfo( size_t rowIndex, const std::vector<std::string> &textColumns )
 {
+	if( mOccupiedInfoRows.size() < rowIndex - 1 )
+		mOccupiedInfoRows.resize( rowIndex );
+
+	mOccupiedInfoRows[rowIndex] = true;
+
 	mInfoLabel->setRow( rowIndex, textColumns );
+}
+
+void Hud::addInfo( const std::vector<std::string> &textColumns )
+{
+	// Look for an available slot from mAddInfoRow onward
+	for( size_t i = mAddInfoRow; i < mOccupiedInfoRows.size(); i++ ) {
+		if( ! mOccupiedInfoRows[i] )
+			break;
+
+		mAddInfoRow += 1;
+	}
+
+	mInfoLabel->setRow( mAddInfoRow, textColumns );
+	mAddInfoRow += 1;
 }
 
 void Hud::layout()
@@ -294,10 +313,13 @@ void Hud::update()
 							} ),
 		mShaderControlGroups.end() );
 
-	mGraph->propagateUpdate();
-
+	// reset the initial row for adding info each update
+	// TODO: need to clear GridLabel's cells for the ones that were added
+	mAddInfoRow = 0;
 	if( mShowFps )
-		mInfoLabel->setRow( 0, { "fps:",  fmt::format( "{}", app::App::get()->getAverageFps() ) } );
+		addInfo( { "fps:",  fmt::format( "{}", app::App::get()->getAverageFps() ) } );
+
+	mGraph->propagateUpdate();
 
 	if( ! glm::epsilonEqual( INFO_ROW_SIZE.y * mInfoLabel->getNumRows(), mInfoLabel->getHeight(), 0.01f ) )
 		resizeInfoLabel();

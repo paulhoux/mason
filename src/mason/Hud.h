@@ -119,8 +119,10 @@ class Hud : public VarOwner {
 
 	//! Displays the app's average frames per second at row index 0 in the info panel
 	void showFps( bool show = true )	{ mShowFps = show; }
-	//! Displays a set of strings at the provided row index.
+	//! Displays a set of strings at the provided row index. The row persists between frames, unless addInfo() overwrites this row.
 	void showInfo( size_t rowIndex, const std::vector<std::string> &textColumns );
+	//! Adds info to the info panel for just this frame, at the next available row.
+	void addInfo( const std::vector<std::string> &textColumns );
 
 	// VarOwner implementation. TODO: make private or protected if possible
 	void removeTarget( void *target ) override;
@@ -174,6 +176,8 @@ private:
 	bool		mFullScreen = true;
 
 	bool	mShowFps = true;
+	size_t  mAddInfoRow = 0;
+	std::vector<bool>	mOccupiedInfoRows;
 
 	std::vector<ShaderControlGroup>		mShaderControlGroups;
 };
