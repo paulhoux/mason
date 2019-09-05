@@ -55,6 +55,8 @@ void RenderToTexture::setSize( const ci::ivec2 &size )
 	fboFormat.samples( mFormat.mMsaaSamples );
 
 	mFbo = gl::Fbo::create( clampedSize.x, clampedSize.y, fboFormat );
+
+	setLabel( mLabel );
 }
 
 ci::ivec2 RenderToTexture::getSize() const
@@ -71,6 +73,16 @@ ci::gl::Texture2dRef RenderToTexture::getTexture() const
 		return {};
 
 	return mFbo->getColorTexture();
+}
+
+void RenderToTexture::setLabel(const std::string& label)
+{
+	mLabel = label;
+	
+	if (mFbo) {
+		mFbo->setLabel(label + " Fbo");
+		mFbo->getTexture2d(GL_COLOR_ATTACHMENT0)->setLabel(label + " Color");
+	}
 }
 
 void RenderToTexture::render()

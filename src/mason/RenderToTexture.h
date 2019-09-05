@@ -58,6 +58,8 @@ public:
 	ci::signals::Signal<void ()>&	getSignalDraw()	{ return *mSignalDraw; }
 	ci::gl::Texture2dRef			getTexture() const;
 
+	void setLabel( const std::string &label );
+
 	//! Renders to texture, calling the draw signal as appropriate
 	void render();
 
@@ -65,7 +67,7 @@ private:
 
 	ci::gl::FboRef		mFbo;
 	Format				mFormat;
-
+	std::string         mLabel = "RenderToTexture";
 	std::unique_ptr<ci::signals::Signal<void ()>>	mSignalDraw;
 };
 
